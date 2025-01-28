@@ -1,9 +1,9 @@
-
 import { PortableText } from "@portabletext/react"; // Assuming you're using PortableText
 import Image from "next/image";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import CommentSection from "@/app/components/comments";
+import { Blog } from "@/app/type";
 
 const page = async ({ params }: { params: { slug: string } }) => {
   const query = `*[_type == "Blog" && slug.current == $slug][0] {
@@ -22,8 +22,14 @@ const page = async ({ params }: { params: { slug: string } }) => {
         {data.Title}
       </h1>
 
-      <p className="text-gray-700">{"Published by: "}{data.authorname}</p>
-      <span className="text-gray-700 pt-0 mt-0">{"Published on: "}{data.publishdate}</span>
+      <p className="text-gray-700">
+        {"Published by: "}
+        {data.authorname}
+      </p>
+      <span className="text-gray-700 pt-0 mt-0">
+        {"Published on: "}
+        {data.publishdate}
+      </span>
 
       <Image
         src={urlFor(data.image).url()}
@@ -47,7 +53,9 @@ const page = async ({ params }: { params: { slug: string } }) => {
 };
 
 export async function generateStaticParams() {
-  const slugs = await client.fetch(`*[_type == "Blog"]{ "slug": slug.current }`);
+  const slugs = await client.fetch(
+    `*[_type == "Blog"]{ "slug": slug.current }`
+  );
   return slugs.map((item: { slug: string }) => ({
     slug: item.slug,
   }));
